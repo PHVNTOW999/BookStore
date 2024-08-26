@@ -1,3 +1,5 @@
+import os
+
 import environ
 from pathlib import Path
 
@@ -67,7 +69,7 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    # http://example.com/complete/github/
+    # http://(backend_api)/complete/github/
     'social_core.backends.github.GithubOAuth2',
 
     'django.contrib.auth.backends.ModelBackend',
@@ -104,3 +106,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
