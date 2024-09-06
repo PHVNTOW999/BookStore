@@ -12,9 +12,9 @@ urlpatterns = [
     # auth
     path('api/v1/authtest/', authTest),
     # social auth - oauth
-    re_path('', include('social_django.urls', namespace='social')),
+    path('', include('social_django.urls', namespace='social')),
     # jwt
-    path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/v1/token/create/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
