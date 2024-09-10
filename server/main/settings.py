@@ -14,24 +14,36 @@ SECRET_KEY = env("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = ["*"]
+
+CORS_ORIGIN_WHITELIST = ["*"]
+
+CORS_ALLOW_METHODS = ["*"]
+
 
 INSTALLED_APPS = [
+    # core
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # dependencies
     'rest_framework',
     'rest_framework_simplejwt',
     'social_django',
-
+    # apps
+    # 'main',
     'customAuth',
     'books',
 ]
-
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -41,6 +53,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
@@ -94,10 +107,10 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+
     # http://(backend_api)/complete/github/
     'social_core.backends.github.GithubOAuth2',
-
-    'django.contrib.auth.backends.ModelBackend',
 )
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
@@ -105,7 +118,10 @@ SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_GITHUB_KEY = 'Ov23li6LvJZNDoo7kAWL'
 SOCIAL_AUTH_GITHUB_SECRET = '4fed4d0ee1a596b63a67724e83fb1681f038d04a'
 
+SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
+
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'localhost:5173'
+
 # SOCIAL_AUTH_LOGIN_REDIRECT_URL = env('CLIENT_URL')
 
 AUTH_USER_MODEL = "customAuth.User"
@@ -144,11 +160,11 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
-    "UPDATE_LAST_LOGIN": False,
+    "UPDATE_LAST_LOGIN": True,
 
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
