@@ -5,6 +5,11 @@
     <title>Title</title>
 </head>
 <body>
-    <a href="/login/github">github test</a>
+    {% if user.is_authenticated %}
+        <p>{{ request.user }}</p>
+<!--        <a href="{% url 'logout' %}">Log out</a>-->
+    {% else %}
+        <a href="/login/github">github test</a>
+    {% endif %}
 </body>
 </html>
