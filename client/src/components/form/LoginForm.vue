@@ -12,7 +12,7 @@
       <el-input v-model="Form.email"/>
     </el-form-item>
     <el-form-item label="Password" prop="pass">
-      <el-input v-model="Form.pass" type="password" autocomplete="off"/>
+      <el-input v-model="Form.password" type="password" autocomplete="off"/>
     </el-form-item>
     <el-form-item label="Confirm Password" prop="checkPass">
       <el-input
@@ -31,21 +31,23 @@
 
 <script lang="ts" setup>
 import {reactive, ref} from 'vue'
+import {useAuthStore} from "@/stores/auth";
 import type {FormInstance, FormRules} from 'element-plus'
 
+const AUTH = useAuthStore()
 const ruleFormRef = ref<FormInstance>()
 
 const Form = reactive({
-  email: '',
-  password: '',
-  checkPass: '',
+  email: 'admin1@gmail.com',
+  password: 'qwerty',
+  checkPass: 'qwerty',
 })
 
 const validateEmail = (rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('Please input your email'))
   } else {
-    const emailReg = /^[A-Z0-9_'%=+!`#~$*?^{}&|-]+([\.][A-Z0-9_'%=+!`#~$*?^{}&|-]+)*@[A-Z0-9-]+(\.[A-Z0-9-]+)+$/i
+    const emailReg = /^[A-Z0-9_'%=+!`#~$*?^{}&|-]+(\.[A-Z0-9_'%=+!`#~$*?^{}&|-]+)*@[A-Z0-9-]+(\.[A-Z0-9-]+)+$/i
     if (emailReg.test(Form.email)) {
       callback()
     } else {
@@ -86,6 +88,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
+      AUTH.login(Form)
       console.log(Form)
     } else {
       console.log('error submit!')

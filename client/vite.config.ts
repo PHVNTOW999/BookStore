@@ -6,7 +6,7 @@ export default defineConfig({
     server: {
         proxy: {
             // origin: 'http://127.0.0.1:8080',
-            'foo': process.env.VUE_APP_BASE_API,
+            // 'foo': process.env.VUE_APP_BASE_API,
             '/api': {
                 target: 'http://127.0.0.1:8000/api/v1/',
                 changeOrigin: true,
