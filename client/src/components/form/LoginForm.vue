@@ -31,14 +31,14 @@
 
 <script lang="ts" setup>
 import {reactive, ref} from 'vue'
-import {useAuthStore} from "@/stores/auth";
 import type {FormInstance, FormRules} from 'element-plus'
+import {useAuthStore} from "@/stores/auth";
 
 const AUTH = useAuthStore()
 const ruleFormRef = ref<FormInstance>()
 
 const Form = reactive({
-  email: 'admin1@gmail.com',
+  email: 'admin2@gmail.com',
   password: 'qwerty',
   checkPass: 'qwerty',
 })
@@ -89,7 +89,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
   formEl.validate((valid) => {
     if (valid) {
       AUTH.login(Form)
-      console.log(Form)
     } else {
       console.log('error submit!')
     }
