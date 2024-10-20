@@ -22,7 +22,6 @@ api.interceptors.response.use(config => {
 
 }, async error => {
     if (error.response.data.code == "token_not_valid") {
-        const router = useRouter();
         const token = JSON.parse(localStorage.getItem('token'))
         const {logout} = useAuthStore()
 
@@ -39,9 +38,8 @@ api.interceptors.response.use(config => {
             error.config.headers.Authorization = `JWT ${res.data.access}`
 
             return api.request(error.config)
-        }).catch(() => {
+        }).catch(async () => {
             logout()
-            router.push({name: 'auth'})
         })
     }
 })

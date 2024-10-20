@@ -1,9 +1,12 @@
 import os
-from datetime import timedelta
-
 import environ
 
+from datetime import timedelta
 from pathlib import Path
+from django.core.management.commands.runserver import Command as runserver
+
+runserver.default_addr = 'localhost'
+# # runserver.default_port = '8080'
 
 env = environ.Env()
 environ.Env.read_env()
@@ -26,7 +29,6 @@ CORS_ORIGIN_WHITELIST = ["*"]
 
 CORS_ALLOW_METHODS = ["*"]
 
-
 INSTALLED_APPS = [
     # core
     'django.contrib.admin',
@@ -40,7 +42,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'social_django',
     # apps
-    # 'main',
+    'main',
     'customAuth',
     'books',
 ]
@@ -75,8 +77,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# APPEND_SLASH = False
-
 ROOT_URLCONF = 'main.urls'
 
 TEMPLATES = [
@@ -108,6 +108,7 @@ DATABASES = {
     }
 }
 
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 
@@ -117,14 +118,20 @@ AUTHENTICATION_BACKENDS = (
 
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 
-SOCIAL_AUTH_GITHUB_KEY = 'Ov23li6LvJZNDoo7kAWL'
-SOCIAL_AUTH_GITHUB_SECRET = '4fed4d0ee1a596b63a67724e83fb1681f038d04a'
+SOCIAL_AUTH_URL_NAMESPACE = "social"
+
+SOCIAL_AUTH_GITHUB_KEY = 'Ov23lisAK0jXyEMiXvXW'
+SOCIAL_AUTH_GITHUB_SECRET = 'b6319870e6a1cbc78f163b460c69acb07167975f'
 
 SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'localhost:5173'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://localhost:5173/'
 
-# SOCIAL_AUTH_LOGIN_REDIRECT_URL = env('CLIENT_URL')
+LOGIN_REDIRECT_URL = 'http://localhost:5173/'
+
+SOCIAL_AUTH_LOGIN_ERROR_URL = 'https://www.google.kz/'
+
+SESSION_COOKIE_HTTPONLY = False
 
 AUTH_USER_MODEL = "customAuth.User"
 

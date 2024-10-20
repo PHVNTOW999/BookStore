@@ -1,15 +1,15 @@
-import {createRouter, createWebHistory, useRouter} from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import NewsView from "@/views/NewsView.vue";
 import AuthView from "@/views/AuthView.vue";
 import {useAuthStore} from "@/stores/auth";
-import AboutView from "@/views/AboutView.vue";
+import TestView from "@/views/TestView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: '/',
-            name: '',
+            name: 'home',
             component: NewsView,
             meta: {
                 requiresAuth: true
@@ -18,7 +18,10 @@ const router = createRouter({
         {
             path: '/news',
             name: 'news',
-            component: NewsView
+            component: NewsView,
+            meta: {
+                requiresAuth: true
+            }
         },
         {
             path: '/auth',
@@ -28,7 +31,7 @@ const router = createRouter({
         {
             path: '/test',
             name: 'test',
-            component: AboutView,
+            component: TestView,
         },
         // {
         //     path: '/account',
@@ -47,21 +50,25 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    const router = useRouter();
-    const {check, logout, isAuth} = useAuthStore()
+    const {current, logout, user} = useAuthStore()
+
+    await current()
 
     // if user not auth and page required auth
-    if (!isAuth && to.meta["requiresAuth"]) {
+    if (!user && to.meta["requiresAuth"]) {
         // redirect to page auth
-        router.push({name: 'auth'}).then(next)
+        next('/auth')
     // if user is auth and page required auth
-    } else if(isAuth && to.meta["requiresAuth"]) {
+    } else if(user && to.meta["requiresAuth"]) {
         // check user token
-        await check().then(next).catch(() => {
+        await current().then(next()).catch(() => {
             // if check is false logout and redirect to auth page
             logout()
-            router.push({name: 'auth'}).then(next)
+            next('/auth')
         })
+        // if user is auth page auth not access
+    } else if (user && to.name === 'auth') {
+        next('/')
     } else {
         next()
     }

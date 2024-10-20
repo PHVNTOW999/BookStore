@@ -1,25 +1,19 @@
 import {defineStore} from 'pinia';
-import {computed, reactive} from "vue";
+import {computed} from "vue";
 import api from "@/configs/axios";
+import {useRouter} from "vue-router";
+import {useCookies} from "vue3-cookies";
 
 export const useAuthStore = defineStore('Auth', () => {
-    const auth = reactive({
-        user: null,
-        token: {
-            access: null,
-            refresh: null,
-        }
-    })
+    const router = useRouter();
 
-    const isAuth = computed(() => {
+    const user = computed(() => {
         const lsUser = JSON.parse(localStorage.getItem('user'))
         const lsToken = JSON.parse(localStorage.getItem('token'))
         if (lsUser && lsToken) {
-            auth.user = lsUser
-            auth.token = lsToken
-            return true
+            return lsUser
         } else {
-            return false
+            return null
         }
     })
 
@@ -28,33 +22,39 @@ export const useAuthStore = defineStore('Auth', () => {
             localStorage.setItem('user', JSON.stringify(res.data.user))
             localStorage.setItem('token', JSON.stringify(res.data.token))
         })
+        await user
     }
 
-    const check = async () => {
-        if(isAuth) await api.get('/api/auth/check/')
-    }
-
-    const logout = async () => {
-        localStorage.removeItem('user')
-        localStorage.removeItem('token')
-        if (isAuth === true) {
-            await api.post('/api/auth/logout/')
+    const oauthLogin = async () => {
+        try {
+            await api.get('/api/auth/oauthLogin/').then(res => {
+                localStorage.setItem('user', JSON.stringify(res.data.user))
+                localStorage.setItem('token', JSON.stringify(res.data.token))
+            })
+        } catch (e) {
+            console.log(e)
+        } finally {
+            await user
         }
     }
 
-    // const verifyToken = async (payload) => {
-    //     if (isAuth) return await api.post('/api/token/verify/', {'token': payload})
-    // }
+    const current = async () => {
+        const { cookies } = useCookies();
+        const sessionid = cookies.get('sessionid')
+        if (sessionid) await api.get('/api/auth/current/')
+    }
 
-    // const refreshToken = async (payload) => {
-    //     await api.post('/api/token/refresh/', {'refresh': payload}).then(res => {
-    //         const newToken = {
-    //             access: res.data.access,
-    //             refresh: payload,
-    //         }
-    //         localStorage.setItem('token', JSON.stringify(newToken))
-    //     })
-    // }
+    const logout = async () => {
+        const { cookies } = useCookies();
 
-    return {login, logout, check, auth, isAuth}
+        localStorage.removeItem('user')
+        localStorage.removeItem('token')
+        cookies.remove('sessionid')
+
+        await api.post('/api/auth/logout/')
+        // await router.push({'name': 'auth'})
+        await router.go(0)
+    }
+
+    return {login, logout, current, user, oauthLogin}
 });

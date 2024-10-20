@@ -21,12 +21,16 @@
           autocomplete="off"
       />
     </el-form-item>
+    <el-form-item label="Sign In with Social Network">
+      <a href="http://localhost:5173/api/oauth/login/github/">github</a>
+    </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submitForm(ruleFormRef)">
         Submit
       </el-button>
     </el-form-item>
   </el-form>
+<!--  <button @click="AUTH.oauthLogin">Git</button>-->
 </template>
 
 <script lang="ts" setup>
