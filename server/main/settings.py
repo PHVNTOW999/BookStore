@@ -125,7 +125,7 @@ SOCIAL_AUTH_GITHUB_SECRET = 'b6319870e6a1cbc78f163b460c69acb07167975f'
 
 SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://localhost:5173/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://localhost:5173/auth/oauth'
 
 LOGIN_REDIRECT_URL = 'http://localhost:5173/'
 

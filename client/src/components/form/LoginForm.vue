@@ -1,45 +1,12 @@
-<template>
-  <el-form
-      ref="ruleFormRef"
-      style="max-width: 600px"
-      :model="Form"
-      status-icon
-      :rules="rules"
-      label-width="auto"
-      class="demo-ruleForm"
-  >
-    <el-form-item label="Email" prop="email">
-      <el-input v-model="Form.email"/>
-    </el-form-item>
-    <el-form-item label="Password" prop="pass">
-      <el-input v-model="Form.password" type="password" autocomplete="off"/>
-    </el-form-item>
-    <el-form-item label="Confirm Password" prop="checkPass">
-      <el-input
-          v-model="Form.checkPass"
-          type="password"
-          autocomplete="off"
-      />
-    </el-form-item>
-    <el-form-item label="Sign In with Social Network">
-      <a href="http://localhost:5173/api/oauth/login/github/">github</a>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="submitForm(ruleFormRef)">
-        Submit
-      </el-button>
-    </el-form-item>
-  </el-form>
-<!--  <button @click="AUTH.oauthLogin">Git</button>-->
-</template>
-
-<script lang="ts" setup>
+<script setup lang="ts">
 import {reactive, ref} from 'vue'
 import type {FormInstance, FormRules} from 'element-plus'
 import {useAuthStore} from "@/stores/auth";
+import {useRouter} from "vue-router";
 
 const AUTH = useAuthStore()
 const ruleFormRef = ref<FormInstance>()
+const router = useRouter();
 
 const Form = reactive({
   email: 'admin2@gmail.com',
@@ -90,12 +57,53 @@ const rules = reactive<FormRules<typeof Form>>({
 
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  formEl.validate((valid) => {
+  formEl.validate(async (valid) => {
     if (valid) {
-      AUTH.login(Form)
+      try {
+        await AUTH.login(Form).then(() => {router.go(0)})
+      } catch (e) {
+        console.log(e)
+      } finally {
+        await user
+      }
     } else {
       console.log('error submit!')
     }
   })
 }
 </script>
+
+
+<template>
+  <el-form
+      ref="ruleFormRef"
+      style="max-width: 600px"
+      :model="Form"
+      status-icon
+      :rules="rules"
+      label-width="auto"
+      class="demo-ruleForm"
+  >
+    <el-form-item label="Email" prop="email">
+      <el-input v-model="Form.email"/>
+    </el-form-item>
+    <el-form-item label="Password" prop="pass">
+      <el-input v-model="Form.password" type="password" autocomplete="off"/>
+    </el-form-item>
+    <el-form-item label="Confirm Password" prop="checkPass">
+      <el-input
+          v-model="Form.checkPass"
+          type="password"
+          autocomplete="off"
+      />
+    </el-form-item>
+    <el-form-item label="Sign In with Social Network">
+      <a href="http://localhost:5173/api/oauth/login/github/">github</a>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="submitForm(ruleFormRef)">
+        Submit
+      </el-button>
+    </el-form-item>
+  </el-form>
+</template>

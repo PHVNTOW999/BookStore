@@ -3,6 +3,7 @@ import NewsView from "@/views/NewsView.vue";
 import AuthView from "@/views/AuthView.vue";
 import {useAuthStore} from "@/stores/auth";
 import TestView from "@/views/TestView.vue";
+import OauthView from "@/views/OauthView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,10 +19,7 @@ const router = createRouter({
         {
             path: '/news',
             name: 'news',
-            component: NewsView,
-            meta: {
-                requiresAuth: true
-            }
+            component: NewsView
         },
         {
             path: '/auth',
@@ -29,9 +27,17 @@ const router = createRouter({
             component: AuthView
         },
         {
+            path: '/auth/oauth',
+            name: 'oauth',
+            component: OauthView
+        },
+        {
             path: '/test',
             name: 'test',
             component: TestView,
+            meta: {
+                requiresAuth: true
+            }
         },
         // {
         //     path: '/account',
@@ -55,7 +61,7 @@ router.beforeEach(async (to, from, next) => {
     await current()
 
     // if user not auth and page required auth
-    if (!user && to.meta["requiresAuth"]) {
+    if (user === null && to.meta["requiresAuth"]) {
         // redirect to page auth
         next('/auth')
     // if user is auth and page required auth
@@ -66,7 +72,7 @@ router.beforeEach(async (to, from, next) => {
             logout()
             next('/auth')
         })
-        // if user is auth page auth not access
+        // if user is auth, page auth not access
     } else if (user && to.name === 'auth') {
         next('/')
     } else {

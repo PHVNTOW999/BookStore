@@ -39,20 +39,22 @@ export const useAuthStore = defineStore('Auth', () => {
     }
 
     const current = async () => {
-        const { cookies } = useCookies();
+        const {cookies} = useCookies();
         const sessionid = cookies.get('sessionid')
-        if (sessionid) await api.get('/api/auth/current/')
+        if (sessionid) {
+            await api.get('/api/auth/current/')
+            await user
+        }
     }
 
     const logout = async () => {
-        const { cookies } = useCookies();
+        const {cookies} = useCookies();
 
         localStorage.removeItem('user')
         localStorage.removeItem('token')
         cookies.remove('sessionid')
 
         await api.post('/api/auth/logout/')
-        // await router.push({'name': 'auth'})
         await router.go(0)
     }
 
