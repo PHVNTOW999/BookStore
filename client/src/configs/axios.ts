@@ -1,8 +1,9 @@
 import axios from "axios";
 import {useAuthStore} from "@/stores/auth";
-import {useRouter} from "vue-router";
 
 const api = axios.create()
+
+// const token = (payload) => { return JSON.parse(localStorage.getItem(payload))}
 
 api.defaults.timeout = 60000;
 api.defaults.withCredentials = true;

@@ -60,11 +60,11 @@ const submitForm = (formEl: FormInstance | undefined) => {
   formEl.validate(async (valid) => {
     if (valid) {
       try {
-        await AUTH.login(Form).then(() => {router.go(0)})
+        await AUTH.login(Form).then(() => {router.push({'name': 'test'})})
       } catch (e) {
         console.log(e)
       } finally {
-        await user
+        // await user
       }
     } else {
       console.log('error submit!')

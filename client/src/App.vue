@@ -2,7 +2,7 @@
 import {useAuthStore} from "@/stores/auth";
 import {onMounted} from "vue";
 
-const {user, current, oauthLogin} = useAuthStore()
+const {user, USER, current, oauthLogin} = useAuthStore()
 onMounted(async () => {
   // try {
   //   await current()
@@ -14,11 +14,11 @@ onMounted(async () => {
 </script>
 
 <template>
-<!--  <div v-if="user">-->
-<!--    <p>user</p>-->
-<!--    <p>{{ user.email }}</p>-->
-<!--  </div>-->
-<!--  <div v-else><p>(index) Not Auth</p></div>-->
+  <div v-if="USER">
+    <p>user</p>
+    <div>{{ USER.uuid }}</div>
+  </div>
+  <div v-else><p>(index) Not Auth</p></div>
   <RouterView/>
 </template>
 

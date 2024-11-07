@@ -11,10 +11,7 @@ const router = createRouter({
         {
             path: '/',
             name: 'home',
-            component: NewsView,
-            meta: {
-                requiresAuth: true
-            }
+            component: NewsView
         },
         {
             path: '/news',
@@ -78,7 +75,6 @@ router.beforeEach(async (to, from, next) => {
     } else {
         next()
     }
-
 })
 
 export default router
