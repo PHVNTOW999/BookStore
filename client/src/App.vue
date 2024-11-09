@@ -15,8 +15,7 @@ onMounted(async () => {
 
 <template>
   <div v-if="USER">
-    <p>user</p>
-    <div>{{ USER.uuid }}</div>
+    <div>{{ USER.email }}</div>
   </div>
   <div v-else><p>(index) Not Auth</p></div>
   <RouterView/>

@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import api from "@/configs/axios";
+import api from "@/api/axios";
 
 export const useBooksStore = defineStore('Books', () => {
     const getBookList = async () => {

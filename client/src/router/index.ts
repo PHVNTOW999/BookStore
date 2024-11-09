@@ -1,9 +1,10 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import NewsView from "@/views/NewsView.vue";
-import AuthView from "@/views/AuthView.vue";
+import AuthView from "@/views/Auth/SignInView.vue";
 import {useAuthStore} from "@/stores/auth";
 import TestView from "@/views/TestView.vue";
-import OauthView from "@/views/OauthView.vue";
+import OauthView from "@/views/Auth/SocialAuthView.vue";
+import SignInView from "@/views/Auth/SignInView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,12 +22,27 @@ const router = createRouter({
         {
             path: '/auth',
             name: 'auth',
-            component: AuthView
-        },
-        {
-            path: '/auth/oauth',
-            name: 'oauth',
-            component: OauthView
+            redirect: '/auth/signin',
+            children: [
+                // login page
+                {
+                    path: '/auth/signin',
+                    name: 'signin',
+                    component: SignInView,
+                },
+                // register page
+                {
+                    path: '/auth/signup',
+                    name: 'oauth',
+                    component: OauthView
+                },
+                // sign in with social media
+                {
+                    path: '/auth/social',
+                    name: 'social',
+                    component: OauthView
+                },
+            ]
         },
         {
             path: '/test',
@@ -53,7 +69,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    const {current, logout, user} = useAuthStore()
+    const {current, tokenVerify, logout, user} = useAuthStore()
 
     await current()
 
@@ -64,7 +80,7 @@ router.beforeEach(async (to, from, next) => {
     // if user is auth and page required auth
     } else if(user && to.meta["requiresAuth"]) {
         // check user token
-        await current().then(next()).catch(() => {
+        await tokenVerify().then(next()).catch(() => {
             // if check is false logout and redirect to auth page
             logout()
             next('/auth')

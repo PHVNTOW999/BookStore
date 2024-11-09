@@ -3,8 +3,9 @@ import {reactive, ref} from 'vue'
 import type {FormInstance, FormRules} from 'element-plus'
 import {useAuthStore} from "@/stores/auth";
 import {useRouter} from "vue-router";
+import {ElLoading} from "element-plus";
 
-const AUTH = useAuthStore()
+const {login} = useAuthStore()
 const ruleFormRef = ref<FormInstance>()
 const router = useRouter();
 
@@ -59,12 +60,20 @@ const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
+      const loading = ElLoading.service({
+        fullscreen: true,
+        lock: true,
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      })
       try {
-        await AUTH.login(Form).then(() => {router.push({'name': 'test'})})
+        await login(Form).then(() => {
+          router.push({'name': 'test'})
+        })
       } catch (e) {
         console.log(e)
       } finally {
-        // await user
+        loading.close()
       }
     } else {
       console.log('error submit!')
@@ -72,7 +81,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
   })
 }
 </script>
-
 
 <template>
   <el-form
