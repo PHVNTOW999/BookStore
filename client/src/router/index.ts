@@ -5,6 +5,7 @@ import {useAuthStore} from "@/stores/auth";
 import TestView from "@/views/TestView.vue";
 import OauthView from "@/views/Auth/SocialAuthView.vue";
 import SignInView from "@/views/Auth/SignInView.vue";
+import SignUpView from "@/views/Auth/SignUpView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +35,7 @@ const router = createRouter({
                 {
                     path: '/auth/signup',
                     name: 'oauth',
-                    component: OauthView
+                    component: SignUpView
                 },
                 // sign in with social media
                 {

@@ -10,9 +10,9 @@ const ruleFormRef = ref<FormInstance>()
 const router = useRouter();
 
 const Form = reactive({
-  email: '',
-  password: '',
-  checkPass: '',
+  email: 'admin2@gmail.com',
+  password: 'qwerty',
+  checkPass: 'qwerty',
 })
 
 const validateEmail = (rule: any, value: any, callback: any) => {
@@ -83,55 +83,37 @@ const submitForm = (formEl: FormInstance | undefined) => {
 </script>
 
 <template>
-  <div class="signin mt-10">
-    <el-form
-        ref="ruleFormRef"
-        :model="Form"
-        status-icon
-        :rules="rules"
-        label-width="auto"
-        class="m-auto w-3/4 rounded border border-sky-500 p-5"
-    >
-      <!-- Email -->
-      <el-form-item label="Email" prop="email">
-        <el-input class="float-left" v-model="Form.email"/>
-      </el-form-item>
-      <!-- Password -->
-      <el-form-item label="Password" prop="pass">
-        <el-input v-model="Form.password" type="password" autocomplete="off"/>
-      </el-form-item>
-      <!-- Confirm Password -->
-      <el-form-item label="Confirm Password" prop="checkPass">
-        <el-input v-model="Form.checkPass" type="password" autocomplete="off"/>
-      </el-form-item>
-      <!-- Submit -->
-      <el-form-item>
-        <el-button class="w-full" type="primary" @click="submitForm(ruleFormRef)">Sign In</el-button>
-      </el-form-item>
-
-      <!-- Social Networks -->
-      <el-form-item label="Sign in via Social Networks :">
-        <!-- GitHub -->
-        <span class="social-block bg-white rounded border mr-2">
-          <a href="http://localhost:5173/api/oauth/login/github/">
-            <img src="@/assets/icons/github.svg" width="25" alt="Github" title="Sign in via Github">
-          </a>
-        </span>
-        <!-- Gmail -->
-        <span class="social-block bg-white rounded border">
-          <a href="http://localhost:5173/api/oauth/login/gmail/">
-            <img src="@/assets/icons/gmail.svg" width="25" alt="Github" title="Sign in via Gmail">
-          </a>
-        </span>
-      </el-form-item>
-
-      <!-- Link to Sign Up page -->
-      <div class=" text-center">
-        <el-text class="mx-1">
-          If you don't have an account, please
-          <el-text class="mx-1" type="primary" tag="ins"><router-link to="/auth/signup">Sign Up</router-link></el-text>
-        </el-text>
-      </div>
-    </el-form>
-  </div>
+  <el-form
+      ref="ruleFormRef"
+      style="max-width: 600px"
+      :model="Form"
+      status-icon
+      :rules="rules"
+      label-width="auto"
+      class="demo-ruleForm"
+  >
+    <el-form-item label="Email" prop="email">
+      <el-input v-model="Form.email"/>
+    </el-form-item>
+    <el-form-item label="Password" prop="pass">
+      <el-input v-model="Form.password" type="password" autocomplete="off"/>
+    </el-form-item>
+    <el-form-item label="Confirm Password" prop="checkPass">
+      <el-input
+          v-model="Form.checkPass"
+          type="password"
+          autocomplete="off"
+      />
+    </el-form-item>
+    <el-form-item label="Sign In with Social Network">
+      <a href="http://localhost:5173/api/oauth/login/github/">github</a>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="submitForm(ruleFormRef)">Sign Up</el-button>
+    </el-form-item>
+    <!--  sing in link  -->
+    <el-form-item label="Sign In with Social Network">
+      <router-link to="/auth/signin">Sign In</router-link>
+    </el-form-item>
+  </el-form>
 </template>

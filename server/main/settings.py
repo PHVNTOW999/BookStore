@@ -125,7 +125,7 @@ SOCIAL_AUTH_GITHUB_SECRET = 'b6319870e6a1cbc78f163b460c69acb07167975f'
 
 SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://localhost:5173/auth/oauth'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://localhost:5173/auth/social'
 
 LOGIN_REDIRECT_URL = 'http://localhost:5173/'
 
@@ -170,7 +170,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(seconds=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=10),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,

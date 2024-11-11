@@ -9,7 +9,7 @@ const ggg = async () => {
 
 <template>
   <main>
-    <button @click="ggg">test</button>
+    <button @click="ggg">testnjjnj</button>
     <router-link to="/test">Test</router-link>
   </main>
 </template>
