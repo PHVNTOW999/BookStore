@@ -16,6 +16,10 @@ export const useAuthStore = defineStore('Auth', () => {
     const USER = computed(() => { return user })
 
     //actions
+    const register = async (payload) => {
+        await api.post('/api/auth/register/', payload)
+    }
+
     const login = async (payload) => {
         await api.post('/api/auth/login/', payload).then(res => {
             localStorage.setItem('token', JSON.stringify(res.data.token))
@@ -60,5 +64,5 @@ export const useAuthStore = defineStore('Auth', () => {
         await router.go(0)
     }
 
-    return {user, USER, login, logout, current,  oauthLogin, tokenVerify}
+    return {user, USER, register, login, logout, current,  oauthLogin, tokenVerify}
 });

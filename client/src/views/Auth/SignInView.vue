@@ -12,7 +12,7 @@ const router = useRouter();
 const Form = reactive({
   email: '',
   password: '',
-  checkPass: '',
+  confirmPassword: '',
 })
 
 const validateEmail = (rule: any, value: any, callback: any) => {
@@ -32,15 +32,15 @@ const validatePass = (rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('Please input the password'))
   } else {
-    if (Form.checkPass !== '') {
+    if (Form.confirmPassword !== '') {
       if (!ruleFormRef.value) return
-      ruleFormRef.value?.validateField('checkPass')
+      ruleFormRef.value?.validateField('confirmPassword')
     }
     callback()
   }
 }
 
-const validatePass2 = (rule: any, value: any, callback: any) => {
+const validateConfirmPassword = (rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('Please input the password again'))
   } else if (value !== Form.password) {
@@ -53,7 +53,7 @@ const validatePass2 = (rule: any, value: any, callback: any) => {
 const rules = reactive<FormRules<typeof Form>>({
   email: [{validator: validateEmail, trigger: 'blur'}],
   password: [{validator: validatePass, trigger: 'blur'}],
-  checkPass: [{validator: validatePass2, trigger: 'blur'}]
+  confirmPassword: [{validator: validateConfirmPassword, trigger: 'blur'}]
 })
 
 const submitForm = (formEl: FormInstance | undefined) => {
@@ -90,6 +90,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
         status-icon
         :rules="rules"
         label-width="auto"
+        label-position="left"
         class="m-auto w-3/4 rounded border border-sky-500 p-5"
     >
       <!-- Email -->
@@ -97,12 +98,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
         <el-input class="float-left" v-model="Form.email"/>
       </el-form-item>
       <!-- Password -->
-      <el-form-item label="Password" prop="pass">
+      <el-form-item label="Password" prop="password">
         <el-input v-model="Form.password" type="password" autocomplete="off"/>
       </el-form-item>
       <!-- Confirm Password -->
-      <el-form-item label="Confirm Password" prop="checkPass">
-        <el-input v-model="Form.checkPass" type="password" autocomplete="off"/>
+      <el-form-item label="Confirm Password" prop="confirmPassword">
+        <el-input v-model="Form.confirmPassword" type="password" autocomplete="off"/>
       </el-form-item>
       <!-- Submit -->
       <el-form-item>
