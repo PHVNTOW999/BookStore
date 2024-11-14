@@ -70,16 +70,16 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    const {current, tokenVerify, logout, user} = useAuthStore()
+    const {current, tokenVerify, logout, USER, user} = useAuthStore()
 
     await current()
 
     // if user not auth and page required auth
-    if (user === null && to.meta["requiresAuth"]) {
+    if (USER.value === null && to.meta["requiresAuth"]) {
         // redirect to page auth
         next('/auth')
     // if user is auth and page required auth
-    } else if(user && to.meta["requiresAuth"]) {
+    } else if(USER.value && to.meta["requiresAuth"]) {
         // check user token
         await tokenVerify().then(next()).catch(() => {
             // if check is false logout and redirect to auth page
@@ -87,7 +87,7 @@ router.beforeEach(async (to, from, next) => {
             next('/auth')
         })
         // if user is auth, page auth not access
-    } else if (user && to.name === 'auth') {
+    } else if (USER.value && to.name === 'auth') {
         next('/')
     } else {
         next()

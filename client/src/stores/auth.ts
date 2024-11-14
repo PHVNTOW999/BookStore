@@ -1,19 +1,98 @@
 import {defineStore} from 'pinia';
-import {computed, ref} from "vue";
+import {computed, reactive, ref} from "vue";
 import api from "@/api/axios";
 import {useRouter} from "vue-router";
 import {useCookies} from "vue3-cookies";
+import {ElLoading} from "element-plus";
+import Notification from "@/constants/notifications";
+import ruleFormRef from "../views/Auth/SignInView.vue"
 
 export const useAuthStore = defineStore('Auth', () => {
     const router = useRouter();
     const {cookies} = useCookies();
-    const sessionid = cookies.get('sessionid')
 
-    // state
-    const user = ref(null)
 
     // getters
     const USER = computed(() => { return user })
+
+    // mutations
+    const validateEmail = (rule: any, value: any, callback: any) => {
+        if (value === '') {
+            callback(new Error('Please input your email'))
+        } else {
+            const emailReg = /^[A-Z0-9_'%=+!`#~$*?^{}&|-]+(\.[A-Z0-9_'%=+!`#~$*?^{}&|-]+)*@[A-Z0-9-]+(\.[A-Z0-9-]+)+$/i
+            if (emailReg.test(Form.email)) {
+                callback()
+            } else {
+                callback(new Error('Please input correct email'))
+            }
+        }
+    }
+
+    const validatePass = (rule: any, value: any, callback: any) => {
+        if (value === '') {
+            callback(new Error('Please input the password'))
+        } else {
+            if (Form.confirmPassword !== '') {
+                if (!ruleFormRef.value) return
+                ruleFormRef.value?.validateField('confirmPassword')
+            }
+            callback()
+        }
+    }
+
+    const validateConfirmPassword = (rule: any, value: any, callback: any) => {
+        if (value === '') {
+            callback(new Error('Please input the password again'))
+        } else if (value !== Form.password) {
+            callback(new Error("Two inputs don't match!"))
+        } else {
+            callback()
+        }
+    }
+
+    const submitSignInForm = (formEl) => {
+        if (!formEl) return
+        formEl.validate(async (valid) => {
+            if (valid) {
+                const loading = ElLoading.service({
+                    fullscreen: true,
+                    lock: true,
+                    text: 'Loading',
+                    background: 'rgba(0, 0, 0, 0.7)',
+                })
+                try {
+                    await login(Form).then(() => {
+                        router.push({'name': 'test'})
+                    })
+                } catch (e) {
+                    Notification('Error', 'error')
+                } finally {
+                    loading.close()
+                }
+            } else {
+                console.log('error submit!')
+            }
+        })
+    }
+
+    // state
+
+    // const test2 = ref(null)
+
+    const user = ref(null)
+
+    const Form = reactive({
+        email: 'admin99@gmail.com',
+        password: 'qwerty',
+        confirmPassword: 'qwerty',
+    })
+
+    const rules = reactive({
+        email: [{validator: validateEmail, trigger: 'blur'}],
+        password: [{validator: validatePass, trigger: 'blur'}],
+        confirmPassword: [{validator: validateConfirmPassword, trigger: 'blur'}]
+    })
 
     //actions
     const register = async (payload) => {
@@ -64,5 +143,5 @@ export const useAuthStore = defineStore('Auth', () => {
         await router.go(0)
     }
 
-    return {user, USER, register, login, logout, current,  oauthLogin, tokenVerify}
+    return {user, USER, register, login, logout, current, oauthLogin, tokenVerify, Form, rules, submitSignInForm}
 });

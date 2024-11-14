@@ -1,91 +1,18 @@
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
-import type {FormInstance, FormRules} from 'element-plus'
-import {useAuthStore} from "@/stores/auth";
-import {useRouter} from "vue-router";
-import {ElLoading} from "element-plus";
+import {ref} from 'vue'
+import type {FormInstance} from 'element-plus'
+import {useAuthStore} from "@/stores/auth"
 
-const {login} = useAuthStore()
+const {rules, Form, submitSignInForm} = useAuthStore()
 const ruleFormRef = ref<FormInstance>()
-const router = useRouter();
 
-const Form = reactive({
-  email: '',
-  password: '',
-  confirmPassword: '',
-})
-
-const validateEmail = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('Please input your email'))
-  } else {
-    const emailReg = /^[A-Z0-9_'%=+!`#~$*?^{}&|-]+(\.[A-Z0-9_'%=+!`#~$*?^{}&|-]+)*@[A-Z0-9-]+(\.[A-Z0-9-]+)+$/i
-    if (emailReg.test(Form.email)) {
-      callback()
-    } else {
-      callback(new Error('Please input correct email'))
-    }
-  }
-}
-
-const validatePass = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('Please input the password'))
-  } else {
-    if (Form.confirmPassword !== '') {
-      if (!ruleFormRef.value) return
-      ruleFormRef.value?.validateField('confirmPassword')
-    }
-    callback()
-  }
-}
-
-const validateConfirmPassword = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('Please input the password again'))
-  } else if (value !== Form.password) {
-    callback(new Error("Two inputs don't match!"))
-  } else {
-    callback()
-  }
-}
-
-const rules = reactive<FormRules<typeof Form>>({
-  email: [{validator: validateEmail, trigger: 'blur'}],
-  password: [{validator: validatePass, trigger: 'blur'}],
-  confirmPassword: [{validator: validateConfirmPassword, trigger: 'blur'}]
-})
-
-const submitForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.validate(async (valid) => {
-    if (valid) {
-      const loading = ElLoading.service({
-        fullscreen: true,
-        lock: true,
-        text: 'Loading',
-        background: 'rgba(0, 0, 0, 0.7)',
-      })
-      try {
-        await login(Form).then(() => {
-          router.push({'name': 'test'})
-        })
-      } catch (e) {
-        console.log(e)
-      } finally {
-        loading.close()
-      }
-    } else {
-      console.log('error submit!')
-    }
-  })
-}
+// export default ruleFormRef
 </script>
 
 <template>
   <div class="signin mt-10">
     <el-form
-        ref="ruleFormRef"
+        :ref="ruleFormRef"
         :model="Form"
         status-icon
         :rules="rules"
@@ -107,7 +34,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
       </el-form-item>
       <!-- Submit -->
       <el-form-item>
-        <el-button class="w-full" type="primary" @click="submitForm(ruleFormRef)">Sign In</el-button>
+        <el-button class="w-full" type="primary" @click="submitSignInForm(ruleFormRef)">Sign In</el-button>
       </el-form-item>
 
       <!-- Social Networks -->
@@ -130,7 +57,9 @@ const submitForm = (formEl: FormInstance | undefined) => {
       <div class=" text-center">
         <el-text class="mx-1">
           If you don't have an account, please
-          <el-text class="mx-1" type="primary" tag="ins"><router-link to="/auth/signup">Sign Up</router-link></el-text>
+          <el-text class="mx-1" type="primary" tag="ins">
+            <router-link to="/auth/signup">Sign Up</router-link>
+          </el-text>
         </el-text>
       </div>
     </el-form>

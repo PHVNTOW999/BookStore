@@ -3,8 +3,6 @@ import {useAuthStore} from "@/stores/auth";
 
 const api = axios.create()
 
-// const token = (payload) => { return JSON.parse(localStorage.getItem(payload))}
-
 api.defaults.timeout = 60000;
 api.defaults.withCredentials = true;
 api.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -22,6 +20,7 @@ api.interceptors.response.use(config => {
     return config
 
 }, async error => {
+    // if the error is related to validation of token
     if (error.response.data.code == "token_not_valid") {
         const token = JSON.parse(localStorage.getItem('token'))
         const {logout} = useAuthStore()
@@ -42,6 +41,14 @@ api.interceptors.response.use(config => {
         }).catch(async () => {
             logout()
         })
+    }
+    // if the error is related to authentication
+    // else if (error.response.data.detail == "Authentication credentials were not provided.") {
+    //
+    // }
+    // any
+    else {
+        return Promise.reject(error.response)
     }
 })
 
