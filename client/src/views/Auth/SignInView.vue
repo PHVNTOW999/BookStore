@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import {ref} from 'vue'
-import type {FormInstance} from 'element-plus'
 import {useAuthStore} from "@/stores/auth"
-
-const {rules, Form, submitSignInForm} = useAuthStore()
+import type { FormInstance } from "element-plus";
+import {ref, watch} from "vue";
+const {rules, Form, submitSignInForm, ruleFormRefReplace} = useAuthStore()
 const ruleFormRef = ref<FormInstance>()
 
-// export default ruleFormRef
+watch(() => ruleFormRef.value, () => {
+  ruleFormRefReplace(ruleFormRef.value)
+})
+
 </script>
 
 <template>
   <div class="signin mt-10">
     <el-form
-        :ref="ruleFormRef"
+        ref="ruleFormRef"
         :model="Form"
         status-icon
         :rules="rules"
