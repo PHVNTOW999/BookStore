@@ -152,6 +152,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# SOCIAL_AUTH_PIPELINE = (
+#     'social_core.pipeline.user.user_details',
+# )
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Almaty'
@@ -169,8 +173,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=10),
+    "ACCESS_TOKEN_LIFETIME": timedelta(seconds=3),
+    "REFRESH_TOKEN_LIFETIME": timedelta(seconds=10),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,

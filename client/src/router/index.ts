@@ -34,7 +34,7 @@ const router = createRouter({
                 // register page
                 {
                     path: '/auth/signup',
-                    name: 'oauth',
+                    name: 'signup',
                     component: SignUpView
                 },
                 // sign in with social media
@@ -70,25 +70,18 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    const {current, tokenVerify, logout, USER, user} = useAuthStore()
-
-    await current()
+    const {tokenVerify, USER, checkUp, current} = useAuthStore()
 
     // if user not auth and page required auth
     if (USER.value === null && to.meta["requiresAuth"]) {
         // redirect to page auth
         next('/auth')
-    // if user is auth and page required auth
-    } else if(USER.value && to.meta["requiresAuth"]) {
-        // check user token
-        await tokenVerify().then(next()).catch(() => {
-            // if check is false logout and redirect to auth page
-            logout()
-            next('/auth')
-        })
-        // if user is auth, page auth not access
-    } else if (USER.value && to.name === 'auth') {
-        next('/')
+        // if user is auth and page required auth
+    } else if (USER.value && to.meta["requiresAuth"]) {
+        const token = JSON.parse(localStorage.getItem('token'))
+        // console.log(token.access)
+        if (token) await tokenVerify(token.access).then(next())
+        // next()
     } else {
         next()
     }

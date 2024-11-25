@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from customAuth.views import authTest, LogoutView, LoginView, RegisterView, Current, OauthLogin, cookieTest
+from customAuth.views import LogoutView, LoginView, RegisterView, Current, OauthLogin, CheckUp, test
 
 app_name = 'auth'
 urlpatterns = [
@@ -9,11 +9,11 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView, name='logout'),
     path('current/', Current, name='current'),
+    path('checkup/', CheckUp, name='checkup'),
 
     # social auth - oauth
-    path('test/', authTest, name='test'),
     path('oauthLogin/', OauthLogin, name='oauthLogin'),
-    path('cookie/', cookieTest, name='testCookies'),
+    path('test/', test, name='test'),
 
     # jwt
     path('token/create/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

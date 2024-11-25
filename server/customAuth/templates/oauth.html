@@ -8,21 +8,10 @@
     {% if user.is_authenticated %}
         <p>{{ request.user }}</p>
         <p>{{ request.user.last_login }}</p>
-
-        <br>
-
-        <a href="{% url 'auth:SessionTest' %}">hh</a>
-
-        <br>
-
-        <a href="{% url 'auth:logout' %}">Log out</a>
+<!--        <a href="{% url 'auth:logout' %}">Log out</a>-->
     {% else %}
-<!--        <a href="http://127.0.0.1:8000/api/v1/oauth/login/github/">github test</a>-->
-<!--        <a href="http://localhost:8000/api/oauth/login/github/">github test</a>-->
-        <a href="http://localhost:5173/api/oauth/login/github/">github test</a>
-<!--        <a href="/api/v1/oauth/login/github">github test</a>-->
-<!--        <a href="{% url 'auth:SessionTest' %}">Test</a>-->
-<!--        <a href="{% url 'social:begin' 'github' %}">Test</a>-->
+        <a href="http://localhost:5173/api/oauth/login/github/">github</a>
+<!--        <a href="http://127.0.0.1:8000/api/v1/oauth/login/github/">github</a>-->
     {% endif %}
 </body>
 </html>

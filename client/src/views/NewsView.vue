@@ -15,8 +15,8 @@ const ggg = async () => {
 
 <template>
   <main>
-    <button @click="ggg">getbooks </button>
-    <br />
     <router-link to="/test">Test</router-link>
+    <br />
+    <button @click="ggg">getbooks </button>
   </main>
 </template>

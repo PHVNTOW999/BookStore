@@ -5,7 +5,7 @@ const Notification = (msg, type) => {
     ElMessage({
         duration: 1500,
         showClose: true,
-        message: msg,
+        message: msg || "Error",
         type: type,
     })
 }

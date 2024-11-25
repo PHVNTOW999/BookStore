@@ -2,14 +2,14 @@ import {defineStore} from 'pinia';
 import {computed, reactive, ref} from "vue";
 import api from "@/api/axios";
 import {useRouter} from "vue-router";
-import {useCookies} from "vue3-cookies";
 import {ElLoading} from "element-plus";
 import Notification from "@/constants/notifications";
-import type { FormInstance, FormRules } from "element-plus";
+import type {FormInstance, FormRules} from "element-plus";
+import axios from "axios";
+import {useCookies} from "vue3-cookies";
 
 export const useAuthStore = defineStore('Auth', () => {
     const router = useRouter();
-    const {cookies} = useCookies();
 
     // mutations
     const validateEmail = (rule: any, value: any, callback: any) => {
@@ -68,9 +68,10 @@ export const useAuthStore = defineStore('Auth', () => {
                 })
                 try {
                     await login(Form).then(() => {
-                        router.push({'name': 'test'})
+                        router.push({'name': 'home'})
                     })
                 } catch (e) {
+                    // console.log(e)
                     Notification('Error', 'error')
                 } finally {
                     loading.close()
@@ -81,7 +82,40 @@ export const useAuthStore = defineStore('Auth', () => {
         }).then(() => resetForm)
     }
 
-    // state
+    const submitSignUpForm = (formEl: FormInstance | undefined) => {
+        if (!formEl) return
+        formEl.validate(async (valid) => {
+            if (valid) {
+                const loading = ElLoading.service({
+                    fullscreen: true,
+                    lock: true,
+                    text: 'Loading',
+                    background: 'rgba(0, 0, 0, 0.7)',
+                })
+                try {
+                    await register(Form).then(async () => {
+                        await login(Form).then(() => {
+                            router.push({'name': 'home'})
+                        })
+                    })
+                } catch (e) {
+                    console.log(e)
+                } finally {
+                    loading.close()
+                }
+            } else {
+                console.log('error submit!')
+            }
+        }).then(() => resetForm)
+    }
+
+    const clearAuth = () => {
+        // console.log('clearAuth')
+        localStorage.removeItem('token')
+        user.value = null
+    }
+
+    // states
     const user = ref(null)
 
     const ruleFormRefStore = ref(null)
@@ -99,9 +133,17 @@ export const useAuthStore = defineStore('Auth', () => {
     })
 
     // getters
-    const USER = computed(() => { return user })
+    const USER = computed(() => {
+        return user
+    })
 
-    const RULE_FORM_REF_STORE = computed(() => { return ruleFormRefStore })
+    const TOKEN = computed(() => {
+        return JSON.parse(localStorage.getItem('token'))
+    })
+
+    const RULE_FORM_REF_STORE = computed(() => {
+        return ruleFormRefStore
+    })
 
     //actions
     const register = async (payload) => {
@@ -109,6 +151,7 @@ export const useAuthStore = defineStore('Auth', () => {
     }
 
     const login = async (payload) => {
+        console.log('login')
         await api.post('/api/auth/login/', payload).then(res => {
             localStorage.setItem('token', JSON.stringify(res.data.token))
             user.value = res.data.user
@@ -116,51 +159,124 @@ export const useAuthStore = defineStore('Auth', () => {
     }
 
     const current = async () => {
+        const loading = ElLoading.service({
+            fullscreen: true,
+            lock: true,
+            text: 'Loading',
+            background: 'rgba(0, 0, 0, 0.7)',
+        })
+
         try {
-            await api.get('/api/auth/current/').then(res => { user.value = res.data})
+            await api.get('/api/auth/current/').then(res => {
+                user.value = res.data
+            })
+        } catch (e) {
+            // console.log(e)
+            // Notification('User not auth', 'error')
+            // clearAuth()
+        } finally {
+            loading.close()
+        }
+    }
+
+    const checkUp = async () => {
+        const loading = ElLoading.service({
+            fullscreen: true,
+            lock: true,
+            text: 'Loading',
+            background: 'rgba(0, 0, 0, 0.7)',
+        })
+
+        try {
+            await api.get('/api/auth/checkup/')
         } catch (e) {
             console.log(e)
+        } finally {
+            loading.close()
         }
     }
 
     const oauthLogin = async () => {
+        const loading = ElLoading.service({
+            fullscreen: true,
+            lock: true,
+            text: 'Loading',
+            background: 'rgba(0, 0, 0, 0.7)',
+        })
+
         try {
-            await api.get('/api/auth/oauthLogin/').then(res => {
+            await axios.get('/api/auth/oauthLogin/').then(res => {
                 localStorage.setItem('token', JSON.stringify(res.data.token))
                 user.value = res.data.user
             })
+            console.log('ggg')
         } catch (e) {
-            console.log(e)
+            // console.log(e)
+        } finally {
+            // await router.push({'name': 'home'})
+            loading.close()
         }
     }
 
-    const tokenVerify = async () => {
-        const token = JSON.parse(localStorage.getItem('token'))
+    const tokenVerify = async (payload) => {
+        const loading = ElLoading.service({
+            fullscreen: true,
+            lock: true,
+            text: 'Loading',
+            background: 'rgba(0, 0, 0, 0.7)',
+        })
 
         try {
-            await api.post('/api/auth/token/verify/', {'token': token.access})
+            return await api.post('/api/auth/token/verify/', {'token': payload})
         } catch (e) {
             console.log(e)
+            Notification(e.detail, 'error')
+        } finally {
+            loading.close()
+        }
+    }
+
+    const tokenRefresh = async (payload) => {
+        const loading = ElLoading.service({
+            fullscreen: true,
+            lock: true,
+            text: 'Loading',
+            background: 'rgba(0, 0, 0, 0.7)',
+        })
+
+        try {
+            return await axios.post('/api/auth/token/refresh/', {refresh: payload.refresh}, {
+                headers: {
+                    'Authorization': `JWT ${payload.access}`
+                }
+            })
+        } catch (e) {
+            console.log(e)
+            // Notification(e.detail, 'error')
+            clearAuth()
+            return Promise.reject()
+        } finally {
+            loading.close()
         }
     }
 
     const logout = async () => {
-        localStorage.removeItem('token')
-        cookies.remove('sessionid')
-
         await api.post('/api/auth/logout/')
-        await router.go(0)
     }
 
     return {
         // Main
         user,
         USER,
+        TOKEN,
         current,
+        checkUp,
         register,
         login,
         oauthLogin,
         tokenVerify,
+        tokenRefresh,
+        clearAuth,
         logout,
         // Form
         Form,
@@ -169,5 +285,6 @@ export const useAuthStore = defineStore('Auth', () => {
         RULE_FORM_REF_STORE,
         ruleFormRefReplace,
         submitSignInForm,
+        submitSignUpForm,
     }
 });

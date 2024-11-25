@@ -10,45 +10,43 @@ api.defaults.xsrfCookieName = 'csrftoken';
 
 api.interceptors.request.use(config => {
     const token = JSON.parse(localStorage.getItem('token'))
+
     if (token) config.headers.Authorization = `JWT ${token.access}`
+
+    if(token && config.url == "/api/auth/token/verify/") config.data = {token: token.access}
+    // if(token && config.url == "/api/auth/token/refresh/") config.data = {refresh: token.refresh}
+
     return config
 })
 
 api.interceptors.response.use(config => {
-    const token = JSON.parse(localStorage.getItem('token'))
-    if (token) config.headers['Authorization'] = `JWT ${token.access}`
     return config
-
 }, async error => {
-    // if the error is related to validation of token
-    if (error.response.data.code == "token_not_valid") {
-        const token = JSON.parse(localStorage.getItem('token'))
-        const {logout} = useAuthStore()
-
-        return await axios.post('/api/auth/token/refresh/', {refresh: token.refresh}, {
-            headers: {
-                'Authorization': `JWT ${token.access}`
-            }
-        }).then(res => {
+    const {clearAuth, tokenRefresh, TOKEN} = useAuthStore()
+    const token = JSON.parse(localStorage.getItem('token'))
+    // if the error is related to validation of token or auth
+    if (error.response.status == 401) {
+        // try refresh token
+        return await tokenRefresh(token).then(async res => {
             const newToken = {
                 access: res.data.access,
                 refresh: token.refresh,
             }
+
             localStorage.setItem('token', JSON.stringify(newToken))
-            error.config.headers.Authorization = `JWT ${res.data.access}`
+            error.config.headers.authorization = `JWT ${res.data.access}`
 
             return api.request(error.config)
-        }).catch(async () => {
-            logout()
+        }).catch(() => {
+            console.log('error')
+            // if refresh token is broke, delete user and token
+            clearAuth()
+            return Promise.reject(error.response)
         })
     }
-    // if the error is related to authentication
-    // else if (error.response.data.detail == "Authentication credentials were not provided.") {
-    //
-    // }
     // any
     else {
-        return Promise.reject(error.response)
+        return Promise.reject(error.response.data)
     }
 })
 
