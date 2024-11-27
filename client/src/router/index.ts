@@ -1,11 +1,12 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import NewsView from "@/views/NewsView.vue";
-import AuthView from "@/views/Auth/SignInView.vue";
 import {useAuthStore} from "@/stores/auth";
 import TestView from "@/views/TestView.vue";
 import OauthView from "@/views/Auth/SocialAuthView.vue";
 import SignInView from "@/views/Auth/SignInView.vue";
 import SignUpView from "@/views/Auth/SignUpView.vue";
+import {useCookies} from "vue3-cookies";
+import Notification from "@/constants/notifications";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,18 +71,24 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    const {tokenVerify, USER, checkUp, current} = useAuthStore()
+    const {tokenVerify} = useAuthStore()
+    const {cookies} = useCookies()
 
-    // if user not auth and page required auth
-    if (USER.value === null && to.meta["requiresAuth"]) {
-        // redirect to page auth
-        next('/auth')
-        // if user is auth and page required auth
-    } else if (USER.value && to.meta["requiresAuth"]) {
-        const token = JSON.parse(localStorage.getItem('token'))
-        // console.log(token.access)
-        if (token) await tokenVerify(token.access).then(next())
-        // next()
+    const token = JSON.parse(localStorage.getItem('token'))
+    const sessionid = cookies.get('sessionid')
+
+    const auth = !!(token && sessionid)
+
+    // if user not auth and page require auth then redirect to authentication page
+    if (!auth && to.meta["requiresAuth"]) {
+        Notification('This page only for authorized users!', 'error')
+        next(from.path)
+        // if user is auth and page require authentication then verify token
+    } else if (auth && to.meta["requiresAuth"]) {
+        await tokenVerify(token.access).then(next())
+        // if user is auth and this authentication page then transfer user to previous page
+    } else if (auth && to.matched[0].name == 'auth') {
+        next(from.path)
     } else {
         next()
     }

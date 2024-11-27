@@ -5,11 +5,12 @@ import {useRouter} from "vue-router";
 import {ElLoading} from "element-plus";
 import Notification from "@/constants/notifications";
 import type {FormInstance, FormRules} from "element-plus";
-import axios from "axios";
 import {useCookies} from "vue3-cookies";
+import axios from "axios";
 
 export const useAuthStore = defineStore('Auth', () => {
     const router = useRouter();
+    const {cookies} = useCookies()
 
     // mutations
     const validateEmail = (rule: any, value: any, callback: any) => {
@@ -71,13 +72,12 @@ export const useAuthStore = defineStore('Auth', () => {
                         router.push({'name': 'home'})
                     })
                 } catch (e) {
-                    // console.log(e)
-                    Notification('Error', 'error')
+                    Notification(e, 'error')
                 } finally {
                     loading.close()
                 }
             } else {
-                console.log('error submit!')
+                Notification('Form invalid!', 'warning')
             }
         }).then(() => resetForm)
     }
@@ -99,19 +99,19 @@ export const useAuthStore = defineStore('Auth', () => {
                         })
                     })
                 } catch (e) {
-                    console.log(e)
+                    Notification(e, 'error')
                 } finally {
                     loading.close()
                 }
             } else {
-                console.log('error submit!')
+                Notification('Form invalid!', 'error')
             }
         }).then(() => resetForm)
     }
 
     const clearAuth = () => {
-        // console.log('clearAuth')
         localStorage.removeItem('token')
+        cookies.remove('sessionid')
         user.value = null
     }
 
@@ -137,25 +137,50 @@ export const useAuthStore = defineStore('Auth', () => {
         return user
     })
 
-    const TOKEN = computed(() => {
-        return JSON.parse(localStorage.getItem('token'))
-    })
-
     const RULE_FORM_REF_STORE = computed(() => {
         return ruleFormRefStore
     })
 
     //actions
     const register = async (payload) => {
-        await api.post('/api/auth/register/', payload)
+        const loading = ElLoading.service({
+            fullscreen: true,
+            lock: true,
+            text: 'Loading',
+            background: 'rgba(0, 0, 0, 0.7)',
+        })
+
+        try {
+            await api.post('/api/auth/register/', payload).then(() => {
+                Notification('You have successfully registered!', 'success')
+            })
+        } catch (e) {
+            Notification(e.data.detail || e.statusText, 'error')
+        } finally {
+            loading.close()
+        }
     }
 
     const login = async (payload) => {
-        console.log('login')
-        await api.post('/api/auth/login/', payload).then(res => {
-            localStorage.setItem('token', JSON.stringify(res.data.token))
-            user.value = res.data.user
+        const loading = ElLoading.service({
+            fullscreen: true,
+            lock: true,
+            text: 'Loading',
+            background: 'rgba(0, 0, 0, 0.7)',
         })
+
+        try {
+            await api.post('/api/auth/login/', payload).then(res => {
+                localStorage.setItem('token', JSON.stringify(res.data.token))
+                user.value = res.data.user
+            }).then(() => {
+                Notification('You have successfully sign in!', 'success')
+            })
+        } catch (e) {
+            Notification(e.data.detail || e.statusText, 'error')
+        } finally {
+            loading.close()
+        }
     }
 
     const current = async () => {
@@ -171,26 +196,7 @@ export const useAuthStore = defineStore('Auth', () => {
                 user.value = res.data
             })
         } catch (e) {
-            // console.log(e)
-            // Notification('User not auth', 'error')
-            // clearAuth()
-        } finally {
-            loading.close()
-        }
-    }
-
-    const checkUp = async () => {
-        const loading = ElLoading.service({
-            fullscreen: true,
-            lock: true,
-            text: 'Loading',
-            background: 'rgba(0, 0, 0, 0.7)',
-        })
-
-        try {
-            await api.get('/api/auth/checkup/')
-        } catch (e) {
-            console.log(e)
+            // null
         } finally {
             loading.close()
         }
@@ -205,15 +211,15 @@ export const useAuthStore = defineStore('Auth', () => {
         })
 
         try {
-            await axios.get('/api/auth/oauthLogin/').then(res => {
+            await api.get('/api/auth/oauthLogin/').then(async res => {
                 localStorage.setItem('token', JSON.stringify(res.data.token))
                 user.value = res.data.user
+                await router.push({'name': 'home'})
             })
-            console.log('ggg')
         } catch (e) {
-            // console.log(e)
+            await router.push({'name': 'auth'})
+            Notification(e.data.detail || e.statusText, 'error')
         } finally {
-            // await router.push({'name': 'home'})
             loading.close()
         }
     }
@@ -229,8 +235,7 @@ export const useAuthStore = defineStore('Auth', () => {
         try {
             return await api.post('/api/auth/token/verify/', {'token': payload})
         } catch (e) {
-            console.log(e)
-            Notification(e.detail, 'error')
+            Notification(e.data.detail || e.statusText, 'error')
         } finally {
             loading.close()
         }
@@ -251,26 +256,36 @@ export const useAuthStore = defineStore('Auth', () => {
                 }
             })
         } catch (e) {
-            console.log(e)
-            // Notification(e.detail, 'error')
-            clearAuth()
-            return Promise.reject()
+            Notification(e.data.detail || e.statusText, 'error')
         } finally {
             loading.close()
         }
     }
 
     const logout = async () => {
-        await api.post('/api/auth/logout/')
+        const loading = ElLoading.service({
+            fullscreen: true,
+            lock: true,
+            text: 'Loading',
+            background: 'rgba(0, 0, 0, 0.7)',
+        })
+
+        try {
+            await api.post('/api/auth/logout/').then(res => {
+                Notification(res.data, 'success')
+            }).then(clearAuth)
+        } catch (e) {
+            Notification(e.data.detail || e.statusText, 'error')
+        } finally {
+            loading.close()
+        }
     }
 
     return {
         // Main
         user,
         USER,
-        TOKEN,
         current,
-        checkUp,
         register,
         login,
         oauthLogin,

@@ -12,9 +12,7 @@ api.interceptors.request.use(config => {
     const token = JSON.parse(localStorage.getItem('token'))
 
     if (token) config.headers.Authorization = `JWT ${token.access}`
-
     if(token && config.url == "/api/auth/token/verify/") config.data = {token: token.access}
-    // if(token && config.url == "/api/auth/token/refresh/") config.data = {refresh: token.refresh}
 
     return config
 })
@@ -22,7 +20,7 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(config => {
     return config
 }, async error => {
-    const {clearAuth, tokenRefresh, TOKEN} = useAuthStore()
+    const {clearAuth, tokenRefresh} = useAuthStore()
     const token = JSON.parse(localStorage.getItem('token'))
     // if the error is related to validation of token or auth
     if (error.response.status == 401) {
@@ -38,9 +36,9 @@ api.interceptors.response.use(config => {
 
             return api.request(error.config)
         }).catch(() => {
-            console.log('error')
-            // if refresh token is broke, delete user and token
+            // if refresh token not valid then delete user and token
             clearAuth()
+            error.response.data.detail = 'You have not authorized, please authorize!'
             return Promise.reject(error.response)
         })
     }
