@@ -1,10 +1,9 @@
 import {defineStore} from 'pinia';
-import {computed, reactive, ref} from "vue";
+import {computed, ref} from "vue";
 import api from "@/config/axios";
 import {useRouter} from "vue-router";
 import {ElLoading} from "element-plus";
 import Notification from "@/helpers/notification";
-import type {FormInstance, FormRules} from "element-plus";
 import {useCookies} from "vue3-cookies";
 import axios from "axios";
 import asyncPattern from "@/helpers/asyncPattern";
@@ -13,110 +12,20 @@ export const useAuthStore = defineStore('Auth', () => {
     const router = useRouter();
     const {cookies} = useCookies()
 
-    // mutations
-    const validateEmail = (rule: any, value: any, callback: any) => {
-        if (value === '') {
-            callback(new Error('Please input your email'))
-        } else {
-            const emailReg = /^[A-Z0-9_'%=+!`#~$*?^{}&|-]+(\.[A-Z0-9_'%=+!`#~$*?^{}&|-]+)*@[A-Z0-9-]+(\.[A-Z0-9-]+)+$/i
-            if (emailReg.test(Form.email)) {
-                callback()
-            } else {
-                callback(new Error('Please input correct email'))
-            }
-        }
-    }
-
-    const validatePass = (rule: any, value: any, callback: any) => {
-        if (value === '') {
-            callback(new Error('Please input the password'))
-        } else {
-            if (Form.confirmPassword !== '') {
-                if (!ruleFormRefStore.value) return
-                ruleFormRefStore.value?.validateField('confirmPassword')
-            }
-            callback()
-        }
-    }
-
-    const validateConfirmPassword = (rule: any, value: any, callback: any) => {
-        if (value === '') {
-            callback(new Error('Please input the password again'))
-        } else if (value !== Form.password) {
-            callback(new Error("Two inputs don't match!"))
-        } else {
-            callback()
-        }
-    }
-
-    const ruleFormRefReplace = (payload) => {
-        return ruleFormRefStore.value = payload
-    }
-
-    const resetForm = (formEl: FormInstance | undefined) => {
-        if (!formEl) return
-        formEl.resetFields()
-    }
-
-    const submitSignInForm = (formEl: FormInstance | undefined) => {
-        if (!formEl) return
-        formEl.validate(async (valid) => {
-            if (valid) {
-                await asyncPattern(login(Form).then(() => {
-                    router.push({'name': 'home'})
-                }), true)
-            } else {
-                Notification('Form invalid!', 'warning')
-            }
-        }).then(() => resetForm)
-    }
-
-    const submitSignUpForm = (formEl: FormInstance | undefined) => {
-        if (!formEl) return
-        formEl.validate(async (valid) => {
-            if (valid) {
-                await asyncPattern(register(Form).then(async () => {
-                    await login(Form).then(() => {
-                        router.push({'name': 'home'})
-                    })
-                }), true)
-            } else {
-                Notification('Form invalid!', 'error')
-            }
-        }).then(() => resetForm)
-    }
-
-    const clearAuth = () => {
-        localStorage.removeItem('token')
-        cookies.remove('sessionid')
-        user.value = null
-    }
-
     // states
     const user = ref(null)
-
-    const ruleFormRefStore = ref(null)
-
-    const Form = reactive({
-        email: 'admin99@gmail.com',
-        password: 'qwerty',
-        confirmPassword: 'qwerty',
-    })
-
-    const rules = reactive<FormRules<typeof ruleFormRefStore>>({
-        email: [{validator: validateEmail, trigger: 'blur'}],
-        password: [{validator: validatePass, trigger: 'blur'}],
-        confirmPassword: [{validator: validateConfirmPassword, trigger: 'blur'}]
-    })
 
     // getters
     const USER = computed(() => {
         return user
     })
 
-    const RULE_FORM_REF_STORE = computed(() => {
-        return ruleFormRefStore
-    })
+    // mutations
+    const clearAuth = () => {
+        localStorage.removeItem('token')
+        cookies.remove('sessionid')
+        user.value = null
+    }
 
     //actions
     const register = async (payload) => {
@@ -134,12 +43,6 @@ export const useAuthStore = defineStore('Auth', () => {
         }), true)
     }
 
-    const current = async () => {
-        await asyncPattern(api.get('/api/auth/current/').then(res => {
-            user.value = res.data
-        }), false)
-    }
-
     const oauthLogin = async () => {
         await asyncPattern(api.get('/api/auth/oauthLogin/').then(async res => {
             localStorage.setItem('token', JSON.stringify(res.data.token))
@@ -148,8 +51,10 @@ export const useAuthStore = defineStore('Auth', () => {
         }), true)
     }
 
-    const tokenVerify = async (payload) => {
-        await asyncPattern(api.post('/api/auth/token/verify/', {'token': payload}), true)
+    const current = async () => {
+        await asyncPattern(api.get('/api/auth/current/').then(res => {
+            user.value = res.data
+        }), false)
     }
 
     const tokenRefresh = async (payload) => {
@@ -173,6 +78,10 @@ export const useAuthStore = defineStore('Auth', () => {
         }
     }
 
+    const tokenVerify = async (payload) => {
+        await asyncPattern(api.post('/api/auth/token/verify/', {'token': payload}), true)
+    }
+
     const logout = async () => {
         await asyncPattern(api.post('/api/auth/logout/').then(res => {
             Notification(res.data, 'success')
@@ -183,21 +92,13 @@ export const useAuthStore = defineStore('Auth', () => {
         // Main
         user,
         USER,
-        current,
         register,
         login,
         oauthLogin,
-        tokenVerify,
+        current,
         tokenRefresh,
+        tokenVerify,
         clearAuth,
         logout,
-        // Form
-        Form,
-        rules,
-        ruleFormRefStore,
-        RULE_FORM_REF_STORE,
-        ruleFormRefReplace,
-        submitSignInForm,
-        submitSignUpForm,
     }
 });

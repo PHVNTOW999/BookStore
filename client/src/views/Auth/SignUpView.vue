@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {useAuthStore} from "@/stores/auth"
 import type {FormInstance} from "element-plus";
 import {ref, watch} from "vue";
+import {useAuthFormStore} from "@/stores/authForm";
 
-const {rules, Form, submitSignUpForm, ruleFormRefReplace} = useAuthStore()
+const {rules, Form, submitSignUpForm, ruleFormRefReplace} = useAuthFormStore()
 const ruleFormRef = ref<FormInstance>()
 
 watch(() => ruleFormRef.value, () => {
