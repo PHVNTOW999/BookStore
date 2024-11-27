@@ -1,22 +1,24 @@
 <script setup lang="ts">
 import {useBooksStore} from "@/stores/books";
-import Notification from "@/constants/notifications";
+import {useAuthStore} from "@/stores/auth";
 
+const {USER, logout} = useAuthStore()
 const BOOKS = useBooksStore()
 const ggg = async () => {
-  try {
-    await BOOKS.getBookList()
-  } catch (e) {
-    console.log(e)
-    Notification(e.statusText, 'error')
-  }
+  await BOOKS.getBookList()
 }
 </script>
 
 <template>
   <main>
+    <div v-if="!USER">
+      <router-link to="/auth">Auth</router-link>
+      <br/>
+    </div>
     <router-link to="/test">Test</router-link>
-    <br />
-    <button @click="ggg">getbooks </button>
+    <br/>
+    <button @click="ggg">get books</button>
+    <br/>
+    <button @click="logout">Logout</button>
   </main>
 </template>

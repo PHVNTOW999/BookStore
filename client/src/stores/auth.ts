@@ -3,10 +3,11 @@ import {computed, reactive, ref} from "vue";
 import api from "@/api/axios";
 import {useRouter} from "vue-router";
 import {ElLoading} from "element-plus";
-import Notification from "@/constants/notifications";
+import Notification from "@/constants/notification";
 import type {FormInstance, FormRules} from "element-plus";
 import {useCookies} from "vue3-cookies";
 import axios from "axios";
+import asyncPattern from "@/constants/asyncPattern";
 
 export const useAuthStore = defineStore('Auth', () => {
     const router = useRouter();
@@ -61,21 +62,9 @@ export const useAuthStore = defineStore('Auth', () => {
         if (!formEl) return
         formEl.validate(async (valid) => {
             if (valid) {
-                const loading = ElLoading.service({
-                    fullscreen: true,
-                    lock: true,
-                    text: 'Loading',
-                    background: 'rgba(0, 0, 0, 0.7)',
-                })
-                try {
-                    await login(Form).then(() => {
-                        router.push({'name': 'home'})
-                    })
-                } catch (e) {
-                    Notification(e, 'error')
-                } finally {
-                    loading.close()
-                }
+                await asyncPattern(login(Form).then(() => {
+                    router.push({'name': 'home'})
+                }), true)
             } else {
                 Notification('Form invalid!', 'warning')
             }
@@ -86,23 +75,11 @@ export const useAuthStore = defineStore('Auth', () => {
         if (!formEl) return
         formEl.validate(async (valid) => {
             if (valid) {
-                const loading = ElLoading.service({
-                    fullscreen: true,
-                    lock: true,
-                    text: 'Loading',
-                    background: 'rgba(0, 0, 0, 0.7)',
-                })
-                try {
-                    await register(Form).then(async () => {
-                        await login(Form).then(() => {
-                            router.push({'name': 'home'})
-                        })
+                await asyncPattern(register(Form).then(async () => {
+                    await login(Form).then(() => {
+                        router.push({'name': 'home'})
                     })
-                } catch (e) {
-                    Notification(e, 'error')
-                } finally {
-                    loading.close()
-                }
+                }), true)
             } else {
                 Notification('Form invalid!', 'error')
             }
@@ -143,102 +120,36 @@ export const useAuthStore = defineStore('Auth', () => {
 
     //actions
     const register = async (payload) => {
-        const loading = ElLoading.service({
-            fullscreen: true,
-            lock: true,
-            text: 'Loading',
-            background: 'rgba(0, 0, 0, 0.7)',
-        })
-
-        try {
-            await api.post('/api/auth/register/', payload).then(() => {
-                Notification('You have successfully registered!', 'success')
-            })
-        } catch (e) {
-            Notification(e.data.detail || e.statusText, 'error')
-        } finally {
-            loading.close()
-        }
+        await asyncPattern(api.post('/api/auth/register/', payload).then(() => {
+            Notification('You have successfully registered!', 'success')
+        }), true)
     }
 
     const login = async (payload) => {
-        const loading = ElLoading.service({
-            fullscreen: true,
-            lock: true,
-            text: 'Loading',
-            background: 'rgba(0, 0, 0, 0.7)',
-        })
-
-        try {
-            await api.post('/api/auth/login/', payload).then(res => {
-                localStorage.setItem('token', JSON.stringify(res.data.token))
-                user.value = res.data.user
-            }).then(() => {
-                Notification('You have successfully sign in!', 'success')
-            })
-        } catch (e) {
-            Notification(e.data.detail || e.statusText, 'error')
-        } finally {
-            loading.close()
-        }
+        await asyncPattern(api.post('/api/auth/login/', payload).then(res => {
+            localStorage.setItem('token', JSON.stringify(res.data.token))
+            user.value = res.data.user
+        }).then(() => {
+            Notification('You have successfully sign in!', 'success')
+        }), true)
     }
 
     const current = async () => {
-        const loading = ElLoading.service({
-            fullscreen: true,
-            lock: true,
-            text: 'Loading',
-            background: 'rgba(0, 0, 0, 0.7)',
-        })
-
-        try {
-            await api.get('/api/auth/current/').then(res => {
-                user.value = res.data
-            })
-        } catch (e) {
-            // null
-        } finally {
-            loading.close()
-        }
+        await asyncPattern(api.get('/api/auth/current/').then(res => {
+            user.value = res.data
+        }), false)
     }
 
     const oauthLogin = async () => {
-        const loading = ElLoading.service({
-            fullscreen: true,
-            lock: true,
-            text: 'Loading',
-            background: 'rgba(0, 0, 0, 0.7)',
-        })
-
-        try {
-            await api.get('/api/auth/oauthLogin/').then(async res => {
-                localStorage.setItem('token', JSON.stringify(res.data.token))
-                user.value = res.data.user
-                await router.push({'name': 'home'})
-            })
-        } catch (e) {
-            await router.push({'name': 'auth'})
-            Notification(e.data.detail || e.statusText, 'error')
-        } finally {
-            loading.close()
-        }
+        await asyncPattern(api.get('/api/auth/oauthLogin/').then(async res => {
+            localStorage.setItem('token', JSON.stringify(res.data.token))
+            user.value = res.data.user
+            await router.push({'name': 'home'})
+        }), true)
     }
 
     const tokenVerify = async (payload) => {
-        const loading = ElLoading.service({
-            fullscreen: true,
-            lock: true,
-            text: 'Loading',
-            background: 'rgba(0, 0, 0, 0.7)',
-        })
-
-        try {
-            return await api.post('/api/auth/token/verify/', {'token': payload})
-        } catch (e) {
-            Notification(e.data.detail || e.statusText, 'error')
-        } finally {
-            loading.close()
-        }
+        await asyncPattern(api.post('/api/auth/token/verify/', {'token': payload}), true)
     }
 
     const tokenRefresh = async (payload) => {
@@ -263,22 +174,9 @@ export const useAuthStore = defineStore('Auth', () => {
     }
 
     const logout = async () => {
-        const loading = ElLoading.service({
-            fullscreen: true,
-            lock: true,
-            text: 'Loading',
-            background: 'rgba(0, 0, 0, 0.7)',
-        })
-
-        try {
-            await api.post('/api/auth/logout/').then(res => {
-                Notification(res.data, 'success')
-            }).then(clearAuth)
-        } catch (e) {
-            Notification(e.data.detail || e.statusText, 'error')
-        } finally {
-            loading.close()
-        }
+        await asyncPattern(api.post('/api/auth/logout/').then(res => {
+            Notification(res.data, 'success')
+        }).then(clearAuth), true)
     }
 
     return {
