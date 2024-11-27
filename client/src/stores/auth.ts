@@ -1,13 +1,13 @@
 import {defineStore} from 'pinia';
 import {computed, reactive, ref} from "vue";
-import api from "@/api/axios";
+import api from "@/config/axios";
 import {useRouter} from "vue-router";
 import {ElLoading} from "element-plus";
-import Notification from "@/constants/notification";
+import Notification from "@/helpers/notification";
 import type {FormInstance, FormRules} from "element-plus";
 import {useCookies} from "vue3-cookies";
 import axios from "axios";
-import asyncPattern from "@/constants/asyncPattern";
+import asyncPattern from "@/helpers/asyncPattern";
 
 export const useAuthStore = defineStore('Auth', () => {
     const router = useRouter();

@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
-import api from "@/api/axios";
-import Index from "@/constants/notification";
+import api from "@/config/axios";
+import Notification from "@/helpers/notification";
 import {ElLoading} from "element-plus";
 
 export const useBooksStore = defineStore('Books', () => {
@@ -17,7 +17,7 @@ export const useBooksStore = defineStore('Books', () => {
                 return res.data
             })
         } catch (e) {
-            Index(e.data.detail || e.statusText, 'error')
+            Notification(e.data.detail || e.statusText, 'error')
         } finally {
             loading.close()
         }

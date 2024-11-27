@@ -7,6 +7,7 @@ api.defaults.timeout = 60000;
 api.defaults.withCredentials = true;
 api.defaults.xsrfHeaderName = 'X-CSRFToken';
 api.defaults.xsrfCookieName = 'csrftoken';
+api.defaults.maxRate = 1
 
 api.interceptors.request.use(config => {
     const token = JSON.parse(localStorage.getItem('token'))

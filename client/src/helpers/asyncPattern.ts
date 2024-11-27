@@ -1,5 +1,5 @@
 import {ElLoading} from "element-plus";
-import Notification from "@/constants/notification/index";
+import Notification from "@/helpers/notification";
 
 const asyncPattern = async (payload, notification) => {
     const loading = ElLoading.service({
