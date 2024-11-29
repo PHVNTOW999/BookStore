@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import path, include
-from books.views import BookAPIList
 
 urlpatterns = [
     # admin
@@ -10,7 +9,6 @@ urlpatterns = [
     path('api/v1/auth/', include('customAuth.urls', namespace='auth')),
     path('api/v1/oauth/', include('social_django.urls', namespace='social')),
 
-    # main
-    path('api/v1/booklist/', BookAPIList.as_view(), name='books'),
-
+    # books
+    path('api/v1/books/', include('books.urls', namespace='books')),
 ]

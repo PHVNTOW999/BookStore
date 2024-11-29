@@ -1,27 +1,21 @@
 import {defineStore} from 'pinia';
 import api from "@/config/axios";
-import Notification from "@/helpers/notification";
-import {ElLoading} from "element-plus";
+import asyncPattern from "@/helpers/asyncPattern";
+import {computed, ref} from "vue";
 
 export const useBooksStore = defineStore('Books', () => {
-    const getBookList = async () => {
-        const loading = ElLoading.service({
-            fullscreen: true,
-            lock: true,
-            text: 'Loading',
-            background: 'rgba(0, 0, 0, 0.7)',
-        })
+    // states
+    const list = ref(null)
 
-        try {
-            await api.get('/api/booklist/').then(res => {
-                return res.data
-            })
-        } catch (e) {
-            Notification(e.data.detail || e.statusText, 'error')
-        } finally {
-            loading.close()
-        }
+    // getters
+    const LIST = computed(() => {
+        return list
+    })
+
+    // actions
+    const NewsList = async () => {
+        await asyncPattern(api.get('/api/books/newslist/').then(res => {list.value = res.data}), true)
     }
 
-    return {getBookList}
+    return {NewsList, LIST}
 });

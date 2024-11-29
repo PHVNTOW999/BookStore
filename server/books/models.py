@@ -132,6 +132,12 @@ class Book(models.Model):
         related_name="book_genres"
     )
 
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
     class Meta:
         verbose_name = 'Book'
         verbose_name_plural = 'Books'

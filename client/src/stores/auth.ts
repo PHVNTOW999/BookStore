@@ -90,7 +90,6 @@ export const useAuthStore = defineStore('Auth', () => {
     }
 
     return {
-        // Main
         user,
         USER,
         register,
