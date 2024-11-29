@@ -13,45 +13,70 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'home',
-            component: NewsView
+            name: 'Home',
+            redirect: '/news',
         },
         {
             path: '/news',
-            name: 'news',
-            component: NewsView
+            name: 'News',
+            component: NewsView,
+        },
+        {
+            path: '/news2',
+            name: 'News2',
+            component: NewsView,
         },
         {
             path: '/auth',
-            name: 'auth',
+            name: 'Auth',
             redirect: '/auth/signin',
+            meta: {
+                requiresAuth: false,
+            },
             children: [
                 // login page
                 {
                     path: '/auth/signin',
                     name: 'signin',
                     component: SignInView,
+                    meta: {
+                        requiresAuth: false,
+                    }
                 },
                 // register page
                 {
                     path: '/auth/signup',
                     name: 'signup',
-                    component: SignUpView
+                    component: SignUpView,
+                    meta: {
+                        requiresAuth: false
+                    }
                 },
                 // sign in with social media
                 {
                     path: '/auth/social',
                     name: 'social',
-                    component: OauthView
+                    component: OauthView,
+                    meta: {
+                        requiresAuth: false
+                    }
                 },
             ]
         },
         {
             path: '/test',
-            name: 'test',
+            name: 'Test',
             component: TestView,
             meta: {
                 requiresAuth: true
+            }
+        },
+        {
+            path: '/test2',
+            name: 'Test2',
+            component: TestView,
+            meta: {
+                requiresAuth: false
             }
         },
         // {
@@ -87,7 +112,7 @@ router.beforeEach(async (to, from, next) => {
     } else if (auth && to.meta["requiresAuth"]) {
         await tokenVerify(token.access).then(next())
         // if user is auth and this authentication page then transfer user to previous page
-    } else if (auth && to.matched[0].name == 'auth') {
+    } else if (auth && to.matched[0].name == 'Auth') {
         next(from.path)
     } else {
         next()

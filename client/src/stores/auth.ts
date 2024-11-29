@@ -38,16 +38,17 @@ export const useAuthStore = defineStore('Auth', () => {
         await asyncPattern(api.post('/api/auth/login/', payload).then(res => {
             localStorage.setItem('token', JSON.stringify(res.data.token))
             user.value = res.data.user
+            router.push({'name': 'Home'})
         }).then(() => {
             Notification('You have successfully sign in!', 'success')
         }), true)
     }
 
     const oauthLogin = async () => {
-        await asyncPattern(api.get('/api/auth/oauthLogin/').then(async res => {
+        await asyncPattern(api.get('/api/auth/oauthLogin/').then(res => {
             localStorage.setItem('token', JSON.stringify(res.data.token))
             user.value = res.data.user
-            await router.push({'name': 'home'})
+            router.push({'name': 'Home'})
         }), true)
     }
 
