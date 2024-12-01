@@ -25,6 +25,7 @@ export default {
 <!--    <el-menu-item @click="logout">Logout</el-menu-item>-->
   </el-sub-menu>
 
+
   <el-sub-menu v-else class="ml-auto" style="margin-left: auto;" index="/auth">
     <template #title>Authorize</template>
     <el-menu-item index="/auth/signin">Sign In</el-menu-item>

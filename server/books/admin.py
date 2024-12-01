@@ -5,8 +5,8 @@ from books import models
 @admin.register(models.File)
 class FileAdmin(admin.ModelAdmin):
     list_display = (
-        'file',
-        'uuid'
+        'uuid',
+        'file'
     )
 
 

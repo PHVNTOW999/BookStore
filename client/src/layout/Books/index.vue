@@ -14,7 +14,7 @@ export default {
 </script>
 
 <template>
-  <div class="Books flex justify-between">
-    <BookCart v-for="book in BOOKS" :DATA="book" />
+  <div class="Books p-5 grid grid-cols-4 gap-4" ref="bookLayout">
+    <BookCart v-for="book in BOOKS" :DATA="book"/>
   </div>
 </template>

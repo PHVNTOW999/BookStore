@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
@@ -11,4 +13,4 @@ urlpatterns = [
 
     # books
     path('api/v1/books/', include('books.urls', namespace='books')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
