@@ -1,13 +1,14 @@
-<script lang="ts">
-export default {
-  name: "BookCart",
-  props: {
-    DATA: {
-      type: Object,
-      default: null
-    }
+<script setup lang="ts">
+import {useBooksStore} from "@/stores/books";
+
+const {AddWish, RemoveWish} = useBooksStore()
+
+defineProps({
+  DATA: {
+    type: Object,
+    default: null
   }
-}
+})
 </script>
 
 <template>
@@ -69,9 +70,11 @@ export default {
 
       <div class="bts mt-5">
         <el-button-group class="">
-          <el-button type="primary" icon="Sell"/>
-          <el-button type="primary" icon="Star"/>
-          <!--          <el-button type="primary" icon="StarFilled"/>-->
+          <el-button v-if="DATA['inBasket']" type="primary" icon="GoodsFilled"/>
+          <el-button v-else type="primary" icon="Goods"/>
+
+          <el-button v-if="DATA['wished']" @click="RemoveWish(DATA['uuid'])" type="primary" icon="StarFilled"/>
+          <el-button v-else @click="AddWish(DATA['uuid'])" type="primary" icon="Star"/>
         </el-button-group>
       </div>
     </div>

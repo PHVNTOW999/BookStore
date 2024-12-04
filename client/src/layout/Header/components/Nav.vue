@@ -12,7 +12,5 @@ export default {
 </script>
 
 <template>
-  <el-menu-item v-for="(page, i) of newRouter" :index="page.path" :key="i">
-    {{ page.name }}
-  </el-menu-item>
+  <el-menu-item v-for="(page, i) of newRouter" :index="page.path" :key="i">{{ page.name }}</el-menu-item>
 </template>

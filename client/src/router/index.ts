@@ -79,12 +79,7 @@ const router = createRouter({
                 requiresAuth: false
             }
         },
-        // {
-        //     path: '/account',
-        //     name: 'myAccount',
-        //     component: NewsView
-        // }
-
+        // >    News
         // > 	Bestsellers
         // > 	Search (str)
         // >
