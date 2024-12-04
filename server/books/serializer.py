@@ -1,3 +1,5 @@
+import uuid
+
 from rest_framework import serializers
 from books.models import Book
 from customAuth.serializer import UserSerializer
@@ -5,6 +7,7 @@ from customAuth.serializer import UserSerializer
 
 class BookSerializer(serializers.ModelSerializer):
     wished = serializers.SerializerMethodField('_wished')
+    inBasket = serializers.SerializerMethodField('_inBasket')
 
     def userCheck(self):
         return self.context['request'].user
@@ -12,21 +15,22 @@ class BookSerializer(serializers.ModelSerializer):
     def _wished(self, value):
         if self.userCheck().is_authenticated:
             wishlist = UserSerializer(self.userCheck()).data['wishlist']
-            # if value.uuid:
-            #     return value.uuid
-            for book in wishlist:
-                if value.uuid == book['uuid']:
-                    return book
-                else:
-                    return False
 
-            # wishStatus = wishlist.objects.filter=(uuid=value.uuid)
-            # return UserSerializer(self.userCheck()).data
-            # return wishlist
-        else:
-            return False
+            if wishlist:
+                for book in wishlist:
+                    if value.uuid == uuid.UUID(book['uuid']):
+                        return True
+
+    def _inBasket(self, value):
+        if self.userCheck().is_authenticated:
+            basket = UserSerializer(self.userCheck()).data['basket']
+
+            if basket:
+                for book in basket:
+                    if value.uuid == uuid.UUID(book['uuid']):
+                        return True
 
     class Meta:
         model = Book
         depth = 1
-        fields = "__all__"
+        fields = ['uuid', 'title', 'desc', 'preview', 'genres', 'inBasket', 'wished', 'authors']
