@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useBooksStore} from "@/stores/books";
 
-const {AddWish, RemoveWish} = useBooksStore()
+const {AddWish, RemoveWish, AddBasket, RemoveBasket} = useBooksStore()
 
 defineProps({
   DATA: {
@@ -69,12 +69,13 @@ defineProps({
       </div>
 
       <div class="bts mt-5">
-        <el-button-group class="">
-          <el-button v-if="DATA['inBasket']" type="primary" icon="GoodsFilled"/>
-          <el-button v-else type="primary" icon="Goods"/>
-
-          <el-button v-if="DATA['wished']" @click="RemoveWish(DATA['uuid'])" type="primary" icon="StarFilled"/>
-          <el-button v-else @click="AddWish(DATA['uuid'])" type="primary" icon="Star"/>
+        <el-button-group>
+          <!--wishlist-->
+          <el-button v-if="DATA['inBasket']" @click="RemoveBasket(DATA['uuid']).then($emit('update'))" type="primary" icon="GoodsFilled"/>
+          <el-button v-else type="primary" @click="AddBasket(DATA['uuid']).then($emit('update'))" icon="Goods"/>
+          <!--basket-->
+          <el-button v-if="DATA['wished']" @click="RemoveWish(DATA['uuid']).then($emit('update'))" type="primary" icon="StarFilled"/>
+          <el-button v-else @click="AddWish(DATA['uuid']).then($emit('update'))" type="primary" icon="Star"/>
         </el-button-group>
       </div>
     </div>

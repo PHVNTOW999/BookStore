@@ -15,6 +15,6 @@ export default {
 
 <template>
   <div class="Books p-5 grid grid-cols-4 gap-4" ref="bookLayout">
-    <BookCart v-for="book in BOOKS" :DATA="book"/>
+    <BookCart @update="$emit('update')" v-for="book in BOOKS" :DATA="book"/>
   </div>
 </template>

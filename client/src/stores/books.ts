@@ -21,9 +21,17 @@ export const useBooksStore = defineStore('Books', () => {
         await asyncPattern(api.post('/api/books/removeWish/', {'book': payload}), true)
     }
 
+    const AddBasket = async (payload) => {
+        await asyncPattern(api.post('/api/books/addBasket/', {'book': payload}), true)
+    }
+
+    const RemoveBasket = async (payload) => {
+        await asyncPattern(api.post('/api/books/removeBasket/', {'book': payload}), true)
+    }
+
     const NewsList = async () => {
         await asyncPattern(api.get('/api/books/newslist/').then(res => {list.value = res.data}), true)
     }
 
-    return {NewsList, LIST, AddWish, RemoveWish}
+    return {NewsList, LIST, AddWish, RemoveWish, AddBasket, RemoveBasket}
 });
