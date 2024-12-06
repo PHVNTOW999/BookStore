@@ -100,6 +100,13 @@ class Book(models.Model):
         verbose_name="Description"
     )
 
+    price = models.IntegerField(
+        default=0,
+        null=False,
+        blank=False,
+        verbose_name="Price"
+    )
+
     preview = models.ForeignKey(
         File,
         null=True,

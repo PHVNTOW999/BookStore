@@ -13,7 +13,7 @@ defineProps({
 
 <template>
   <div class="bookCart relative content-center justify-items-center
-              mw-36 w-36 mh-52 h-52 p-2
+              m-auto mw-36 w-36 mh-52 h-52 p-2
               rounded border border-sky-500 bg-zinc-950">
 
     <div class="bookCart__preview contents w-full h-full">
@@ -21,7 +21,7 @@ defineProps({
     </div>
 
     <div class="bookCart__wrap absolute top-0 left-0 w-full h-full p-2 justify-items-center">
-      <div class="info mw-28 w-28 mt-10">
+      <div class="info mw-28 w-28 mt-5">
         <div class="bookCart__title">
           <el-tooltip
               class="box-item"
@@ -68,7 +68,11 @@ defineProps({
         </div>
       </div>
 
-      <div class="bts mt-5">
+      <div class="bookCart__price mt-2">
+        <h1 class="underline text-center truncate">$ {{ DATA['price'] }}</h1>
+      </div>
+
+      <div class="bts mt-3">
         <el-button-group>
           <!--wishlist-->
           <el-button v-if="DATA['inBasket']" @click="RemoveBasket(DATA['uuid']).then($emit('update'))" type="primary" icon="GoodsFilled"/>

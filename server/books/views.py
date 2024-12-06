@@ -21,6 +21,20 @@ def RemoveWish(request):
     return JsonResponse(True, safe=False)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def AddBasket(request):
+    request.user.basket.add(request.data['book'])
+    return JsonResponse(True, safe=False)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def RemoveBasket(request):
+    request.user.basket.remove(request.data['book'])
+    return JsonResponse(True, safe=False)
+
+
 class NewsListView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = Book.objects.all().order_by('-created_at')

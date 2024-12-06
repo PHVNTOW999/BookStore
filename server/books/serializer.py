@@ -33,4 +33,4 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         depth = 1
-        fields = ['uuid', 'title', 'desc', 'preview', 'genres', 'inBasket', 'wished', 'authors']
+        fields = ['uuid', 'title', 'desc', 'price', 'preview', 'genres', 'inBasket', 'wished', 'authors']

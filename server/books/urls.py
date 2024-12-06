@@ -1,6 +1,6 @@
 from django.urls import path
 
-from books.views import NewsListView, AddWish, RemoveWish
+from books.views import NewsListView, AddWish, RemoveWish, AddBasket, RemoveBasket
 
 app_name = 'books'
 
@@ -11,4 +11,7 @@ urlpatterns = [
     # functions
     path('addWish/', AddWish, name='AddWish'),
     path('removeWish/', RemoveWish, name='RemoveWish'),
+
+    path('addBasket/', AddBasket, name='AddBasket'),
+    path('removeBasket/', RemoveBasket, name='RemoveBasket'),
 ]
