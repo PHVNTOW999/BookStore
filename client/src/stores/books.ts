@@ -7,9 +7,21 @@ export const useBooksStore = defineStore('Books', () => {
     // states
     const list = ref(null)
 
+    const authors = ref(null)
+
+    const genres = ref(null)
+
     // getters
     const LIST = computed(() => {
         return list
+    })
+
+    const AUTHORS = computed(() => {
+        return authors
+    })
+
+    const GENRES = computed(() => {
+        return genres
     })
 
     // actions
@@ -33,5 +45,13 @@ export const useBooksStore = defineStore('Books', () => {
         await asyncPattern(api.get('/api/books/newslist/').then(res => {list.value = res.data}), true)
     }
 
-    return {NewsList, LIST, AddWish, RemoveWish, AddBasket, RemoveBasket}
+    const AuthorList = async () => {
+        await asyncPattern(api.get('/api/books/authorlist/').then(res => {authors.value = res.data}), true)
+    }
+
+    const GenreList = async () => {
+        await asyncPattern(api.get('/api/books/genrelist/').then(res => {genres.value = res.data}), true)
+    }
+
+    return {NewsList, LIST, AUTHORS, GENRES, AddWish, RemoveWish, AddBasket, RemoveBasket, AuthorList, GenreList}
 });
